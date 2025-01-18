@@ -25,6 +25,9 @@
 ARG ALPINE_BASE_IMAGE=latest
 FROM alpine:${ALPINE_BASE_IMAGE} AS builder
 
+RUN apk add --no-cache wget && \
+    wget https://dl-cdn.alpinelinux.org/alpine/v3.15/community/x86_64/openssl1.1-compat-dev-1.1.1*.apk && \
+    apk add --allow-untrusted openssl1.1-compat-dev-1.1.1*.apk
 # Install build dependencies
 RUN apk add --no-cache                \
         autoconf                      \
