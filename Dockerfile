@@ -137,8 +137,14 @@ ARG LIBWEBSOCKETS_OPTS="\
     -DLWS_WITHOUT_TEST_SERVER_EXTPOLL=ON \
     -DLWS_WITH_STATIC=OFF"
 
-# Build guacamole-server and its core protocol library dependencies
-RUN ${BUILD_DIR}/src/guacd-docker/bin/build-all.sh
+# Copy the source code
+COPY . /tmp/guacamole-server
+
+# Ensure the build script is executable
+RUN chmod +x /tmp/guacamole-server/src/guacd-docker/bin/build-all.sh
+
+# Run the build script
+RUN /tmp/guacamole-server/src/guacd-docker/bin/build-all.sh
 
 # Record the packages of all runtime library dependencies
 RUN ${BUILD_DIR}/src/guacd-docker/bin/list-dependencies.sh \
