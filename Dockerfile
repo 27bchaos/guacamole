@@ -23,26 +23,28 @@
 
 # The Alpine Linux image that should be used as the basis for the guacd image
 ARG ALPINE_BASE_IMAGE=latest
-FROM alpine:${ALPINE_BASE_IMAGE} AS builder
+FROM alpine:3.15 AS builder
 
 # Install build dependencies
-RUN apk add --no-cache                \
-        autoconf                      \
-        automake                      \
-        build-base                    \
-        cairo-dev                     \
-        cmake                         \
-        git                           \
-        grep                          \
-        libjpeg-turbo-dev             \
-        libpng-dev                    \
-        libtool                       \
-        libwebp-dev                   \
-        make                          \
-        openssl1.1-compat-dev         \
-        pango-dev                     \
-        pulseaudio-dev                \
+RUN apk add --no-cache \
+        autoconf \
+        automake \
+        build-base \
+        cairo-dev \
+        cmake \
+        git \
+        grep \
+        libjpeg-turbo-dev \
+        libpng-dev \
+        libtool \
+        libwebp-dev \
+        make \
+        openssl-dev \
+        pango-dev \
+        pulseaudio-dev \
         util-linux-dev
+
+
 
 # Copy source to container for sake of build
 ARG BUILD_DIR=/tmp/guacamole-server
