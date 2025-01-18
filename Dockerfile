@@ -25,9 +25,6 @@
 ARG ALPINE_BASE_IMAGE=latest
 FROM alpine:${ALPINE_BASE_IMAGE} AS builder
 
-RUN apk add --no-cache wget && \
-    wget https://dl-cdn.alpinelinux.org/alpine/v3.15/community/x86_64/openssl1.1-compat-dev-1.1.1*.apk && \
-    apk add --allow-untrusted openssl1.1-compat-dev-1.1.1*.apk
 # Install build dependencies
 RUN apk add --no-cache                \
         autoconf                      \
@@ -169,37 +166,13 @@ ENV GUACD_LOG_LEVEL=info
 COPY --from=builder ${PREFIX_DIR} ${PREFIX_DIR}
 
 # Bring runtime environment up to date and install runtime dependencies
-RUN apk add --no-cache                \
-        ca-certificates               \
-        font-noto-cjk                 \
-        ghostscript                   \
-        netcat-openbsd                \
-        shadow                        \
-        terminus-font                 \
-        ttf-dejavu                    \
-        ttf-liberation                \
-        util-linux-login && \
-    xargs apk add --no-cache < ${PREFIX_DIR}/DEPENDENCIES
+RUN apk add --no-cache --update \
+        cairo                       \
+        fontconfig                 \
+        freerdp2-libs              \
+        libpng                     \
+        libjpeg-turbo              \
+        libtool                    \
+        ...
 
-# Checks the operating status every 5 minutes with a timeout of 5 seconds
-HEALTHCHECK --interval=5m --timeout=5s CMD nc -z 127.0.0.1 4822 || exit 1
-
-# Create a new user guacd
-ARG UID=1000
-ARG GID=1000
-RUN groupadd --gid $GID guacd
-RUN useradd --system --create-home --shell /sbin/nologin --uid $UID --gid $GID guacd
-
-# Run with user guacd
-USER guacd
-
-# Expose the default listener port
-EXPOSE 4822
-
-# Start guacd, listening on port 0.0.0.0:4822
-#
-# Note the path here MUST correspond to the value specified in the 
-# PREFIX_DIR build argument.
-#
-CMD /opt/guacamole/sbin/guacd -b 0.0.0.0 -L $GUACD_LOG_LEVEL -f
-
+CMD ["guacd"]
